@@ -1,0 +1,117 @@
+# implementation of card game - Memory
+
+import simplegui
+import random
+
+memory =[]
+text_pos = 25
+exposed = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+state = 0
+temp_cards = [0, 0]
+ex_index = [0, 0]
+moves = 0
+
+# helper function to initialize globals
+def init():
+    global memory, exposed, moves, state, temp_cards, ex_index
+    
+    exposed = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+    memory = [i // 2 for i in range(16)]
+    random.shuffle(memory)
+    moves = 0
+    state = 0
+    temp_cards = [0, 0]
+    ex_index = [0, 0]
+    l.set_text("Moves = 0")
+    pass  
+
+     
+# define event handlers
+def mouseclick(pos):
+    global memory, exposed, text_pos, state, temp_cards, ex_index, moves
+    
+    # click used as card index for mouse position
+    click = pos[0] // 50
+    
+    for j in range(16):
+        if j == click:
+            if exposed[j] == False:        
+                if state == 0:
+                    exposed[j] = True
+                    ex_index[state] = j
+                    temp_cards[state] = memory[j]
+                    
+                if state == 1:
+                    exposed[j] = True
+                    ex_index[state] = j
+                    temp_cards[state] = memory[j]
+                    moves += 1
+                    
+                if state == 2:
+                    if temp_cards[0] != temp_cards[1]:
+                        exposed[ex_index[0]] = False
+                        exposed[ex_index[1]] = False
+                        exposed [j] = True
+                        temp_cards = [memory[j],0]
+                        ex_index = [j,0]
+                        state = 0
+                    elif temp_cards[0] == temp_cards[1]:
+                        exposed[ex_index[0]] = True
+                        exposed[ex_index[1]] = True
+                        exposed [j] = True
+                        temp_cards = [memory[j],0]
+                        ex_index = [j,0]
+                        state = 0    
+                l.set_text("Moves = " + str(moves))
+                state +=1
+    pass
+                           
+# cards are logically 50x100 pixels in size    
+def draw(canvas):
+    global memory, text_pos, exposed, state, moves
+    
+    text_pos = 18
+    
+    # logic for drawing exposed cards or not            
+    for i in range(16):
+        if exposed[i] == True:
+            canvas.draw_text(str(memory[i]), [text_pos, 60], 20, "Red")
+            text_pos += 50
+        elif exposed[i] == False:
+            canvas.draw_text("", [text_pos, 60], 20, "Red")
+            text_pos += 50
+    
+    #draw rectangles
+    canvas.draw_polygon([(0,0),(50,0), (50,100), (0, 100)], 3, "White")
+    canvas.draw_polygon([(50,0), (50,100), (100, 100), (100, 0)], 3, "White")
+    canvas.draw_polygon([(100,0), (100,100), (150, 100), (150, 0)], 3, "White")
+    canvas.draw_polygon([(150,0), (150,100), (200, 100), (200, 0)], 3, "White")
+    canvas.draw_polygon([(200,0), (250, 0), (250, 100), (200, 100)], 3, "White")
+    canvas.draw_polygon([(250,0), (250,100), (300, 100), (300, 0)], 3, "White")
+    canvas.draw_polygon([(300,0), (300,100), (350, 100), (350, 0)], 3, "White")
+    canvas.draw_polygon([(350,0), (350,100), (400, 100), (400, 0)], 3, "White")
+    canvas.draw_polygon([(400,0), (400,100), (450, 100), (450, 0)], 3, "White")
+    canvas.draw_polygon([(500,0), (500,100), (450, 100), (450, 0)], 3, "White")
+    canvas.draw_polygon([(550,0), (550,100), (500, 100), (500, 0)], 3, "White")
+    canvas.draw_polygon([(550,0), (550,100), (600, 100), (600, 0)], 3, "White")
+    canvas.draw_polygon([(600,0), (600,100), (650, 100), (650, 0)], 3, "White")
+    canvas.draw_polygon([(700,0), (700,100), (650, 100), (650, 0)], 3, "White")
+    canvas.draw_polygon([(750,0), (750,100), (700, 100), (700, 0)], 3, "White")
+    canvas.draw_polygon([(750,0), (750,100), (800, 100), (800, 0)], 3, "White")
+    pass
+
+
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", 800, 100)
+frame.add_button("Restart", init)
+l=frame.add_label("Moves = 0")
+
+# initialize global variables
+init()
+
+# register event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# frame
+frame.start()
